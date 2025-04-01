@@ -1,0 +1,45 @@
+request_message: "Determing which of the following this user is trying to request. Respond only with the name of the intent."
+action_message: "Fill out this object as best you can given the user's input. Return only the data in json format."
+intents:
+  - name: "Search Wikipedia"
+    function: "search_wikipedia"
+    params:
+      - param: "query"
+        type: "string"
+      - param: "language"
+        type: "string"
+
+  - name: "Get Weather Forecast"
+    function: "get_weather_forecast"
+    params:
+      - param: "location"
+        type: "string"
+
+  - name: "Play Music"
+    function: "play_music"
+    params:
+      - param: "song_title"
+        type: "string"
+
+  - name: "Set Reminder"
+    function: "set_reminder"
+    params:
+      - param: "reminder_text"
+        type: "string"
+      - param: "time"
+        type: "datetime"
+
+  - name: "Search Recipes"
+    function: "search_recipes"
+    params:
+      - param: "cuisine"
+        type: "string"
+      - param: "dietary_restrictions"
+        type: "string"
+
+  - name: "Check Traffic"
+    function: "check_traffic"
+    params:
+      - param: "location"
+        type: "string"
+
