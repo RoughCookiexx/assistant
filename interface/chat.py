@@ -8,7 +8,7 @@ log = logger.setup_logger()
 
 API_KEY = os.getenv("OPENAI_API_KEY")
 
-def chat(system_message, prompt):
+def message(system_message, prompt):
     log.info(f'Sending message to chatGPT: {prompt}')
     openai = OpenAI(api_key=API_KEY)
     response = openai.chat.completions.create(
