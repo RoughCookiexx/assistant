@@ -1,5 +1,6 @@
-request_message: "Determing which of the following this user is trying to request. Respond only with the name of the intent."
+intent_message: "Determing which of the following this user is trying to request. Respond only with the name of the intent."
 action_message: "Add a field to each param for 'value'. Fill out this object as best you can given the user's input. Return only the data in json format."
+processing_message: "You are an AI assistant. Given this object, write a short blurb to the user to let them know you are going to process this. Be specific."
 intents:
   - name: "Search Wikipedia"
     function: "search_wikipedia"
