@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
 A[Android App: Record voice] --> B[Save temp file]
 B --> C[Upload to S3 bucket]
