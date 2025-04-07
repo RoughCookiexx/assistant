@@ -5,7 +5,7 @@ B --> C[Upload to S3 bucket]
 C --> D[API Request: Filename]
 
 D --> E[API Thread: Response OK/FUCK to client]
-E --> F[Download from S3]
+D --> F[Download from S3]
 F --> G[Transcribe audio with Whisper]
 
 G --> H[Send text to ChatGPT]
