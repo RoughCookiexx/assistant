@@ -15,4 +15,4 @@ I --> J{Is it a device command?}
 J -- Yes --> K[Send response + function + params to Android]
 J -- No --> L[Send 'Working on it' message to Android]
 L --> M[Execute command on server]
-M --> N[Send "Done" message + details to Android]
+M --> N[Send 'Done' message + details to Android]

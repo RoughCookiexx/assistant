@@ -51,4 +51,3 @@ def send_processing_message(command_intent):
 
     random_filename = uuid.uuid4()
     file = file_tools.base64_to_file(speech_response.audio_base_64, f'{random_filename}.wav')
-    s3.upload(file, random_filename)
