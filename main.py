@@ -1,8 +1,10 @@
 from flask import Flask
-from api import voice_command
+from api.voice_command import voice_command_blueprint
 from util import logger
 
 app = Flask(__name__)
+app.register_blueprint(voice_command_blueprint)
+
 log = logger.setup_logger()
 
 if __name__ == "__main__":

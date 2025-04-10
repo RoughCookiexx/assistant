@@ -1,17 +1,17 @@
-import random
-import string
+import json
 import threading
 import uuid
 import yaml
 
-from interface.aws_s3 import AwsS3
+import action
+
+from action.registry import ACTION_HANDLERS
+from interface import aws_s3
 from interface import chat
 from interface import transcribe
 from interface import tts
 from services import intent
-from util import logger
-from util import file_tools
-from util import yaml_tools
+from util import logger, yaml_tools
 
 log = logger.setup_logger()
 
@@ -19,7 +19,6 @@ log = logger.setup_logger()
 with open('config.yaml', 'r') as config_file:
     config = yaml.safe_load(config_file)
 BUCKET_NAME = config['aws']['bucket_name']
-s3 = AwsS3(BUCKET_NAME)
 
 with open('intents.yaml', 'r') as intent_file:
         intents = yaml.safe_load(intent_file)
@@ -27,27 +26,38 @@ INTENT_LIST = ', '.join(intent["name"] for intent in intents["intents"])
 
 def handle_command(audio_file_key):
     # Decide what action was requested
-    command_text = transcribe_from_bucket(audio_file_key)
-    command_intent = intent.determine_intent(command_text)
+    command_text = transcribe.transcribe_audio(audio_file_key, BUCKET_NAME)
+    intent_name = intent.determine_intent(command_text)
+    command_json = intent.resolve_intent_parameters(intent_name, command_text)
+    command_action = json.loads(str(command_json))
 
-    # Return a message saying what action is being taken
-    thread = threading.Thread(target=send_processing_message, args=[command_intent])
-    thread.start()
-
-    # Do the action
-    intent.handle_intent(command_intent)
+    # If the client handles this action, skip processing
+    results = None
+    action_run_on_server = yaml_tools.match_yaml_pair(intents, 'name', intent_name) 
+    if action_run_on_server:
+        results = dispatch_action(command_action)
 
     # Push notice that the action was done
+    announce_action_results(command_text, command_action, results)
 
-def transcribe_from_bucket(audio_file_key):
-    random_filename = uuid.uuid4()
-    s3.download(audio_file_key, f'{random_filename}.wav')
+def dispatch_action(action):
+    if action["run_on"] == "server":
+        handler = ACTION_HANDLERS.get(action["function"])
+        if not handler:
+            raise ValueError(f"No handler found for action '{action["function"]}'")
+    else:
+        raise ValueError(f"Action '{action["name"]}' must be handled by client")
 
-    return transcribe.transcribe_audio(f'{random_filename}.wav')
+    return handler(action["params"])
 
-def send_processing_message(command_intent):
-    response_text = chat.message( f"{intents['processing_message']}\n\n",command_intent)
-    speech_response = tts.speak(response_text)
+def announce_action_results(command, action, results=None):
+    if action["run_on"] == "server":
+        response = chat.message({intents['handled_message']}, f"{command}\n\n{results}")
+    else:
+        response = chat.message({intents['client_handling_message']}, "command")
 
-    random_filename = uuid.uuid4()
-    file = file_tools.base64_to_file(speech_response.audio_base_64, f'{random_filename}.wav')
+    speech = tts.speak(response)
+    object_key = str(uuid.uuid4())
+    aws_s3.upload(BUCKET_NAME, speech, object_key)
+
+    # TODO: PUSH NOTIFICATION TO CLIENT

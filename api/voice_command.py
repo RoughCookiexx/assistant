@@ -1,24 +1,22 @@
 import requests
 import threading
 
-from flask import Flask, request, jsonify
-from services import intent
+from flask import Blueprint, request, jsonify
+from services import command_handler
 from util import logger
 
-app = Flask(__name__)
 log = logger.setup_logger()
+voice_command_blueprint = Blueprint('voice_command', __name__)
 
 
-@app.route('/voice_command', methods=['POST'])
+@voice_command_blueprint.route('/voice_command', methods=['POST'])
 def forward_url():
-    url = request.json.get('url')
-    
+    url = request.get_json().get('url')
+
     if url:
-        thread = threading.Thread(target=intent.determine_intent, args=(url,))
+        thread = threading.Thread(target=command_handler.handle_command, args=(url,))
         thread.start()
         return jsonify({"message": "Job started for URL: " + url})
     else:
         return jsonify({"message": "No URL provided"})
 
-if __name__ == '__main__':
-    app.run(debug=True)
