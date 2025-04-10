@@ -1,5 +1,5 @@
 intent_message: "Determing which of the following this user is trying to request. Respond only with the function name of the intent."
-action_message: "For each param in the object, add a field for 'value' and give it a value. Return the full object. The response MUST be in valid json. Validate json when completed."
+action_message: "For each param in the object, add a field for 'value' and give it a value. Fill out this object as best you can given the user's input. Return the full object. The response MUST be in valid json."
 handled_message: "You are an AI assistant. You just completed an action requested by the user. You will be given the request and the results. Respond to their request. Be specific."
 client_handling_message: "You are an AI assistant. Let them know you are going to try to handle the following request."
 intents:
@@ -15,7 +15,7 @@ intents:
   - name: "Get Weather Forecast"
     function: "get_weather_forecast"
     params:
-      - param: "location"
+      - param: "city"
         type: "string"
     run_on: "server"
 

@@ -2,6 +2,7 @@ import boto3
 import json
 import requests
 
+from botocore.exceptions import ClientError 
 from interface import aws_s3
 from util import logger
 
@@ -13,12 +14,17 @@ def transcribe_audio(audio_file_path, bucket_name, region='us-east-1'):
     job_name = audio_file_path
     job_uri = f's3://{bucket_name}/{audio_file_path}'
 
-    transcribe.start_transcription_job(
-        TranscriptionJobName=job_name,
-        Media={'MediaFileUri': job_uri},
-        MediaFormat='wav',
-        LanguageCode='en-US'
-    )
+    try:
+        transcribe.start_transcription_job(
+            TranscriptionJobName=job_name,
+            Media={'MediaFileUri': job_uri},
+            MediaFormat='wav',
+            LanguageCode='en-US'
+        )
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'ConflictException':
+            log.info(f'Job {job_name} already exists.')
+            pass
 
     while True:
         job = transcribe.get_transcription_job(TranscriptionJobName=job_name)

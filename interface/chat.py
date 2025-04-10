@@ -14,9 +14,12 @@ def message(system_message, prompt):
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "system", "content": system_message},
-                  {"role": "user", "content": f"{prompt}"}],
-        max_tokens=50
+                  {"role": "user", "content": prompt}],
+        max_tokens=300
     )
+
+    log.info('ChatGippity\'s response:')
+    log.info(response)
 
     return response.choices[0].message.content
 
