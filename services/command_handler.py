@@ -5,13 +5,14 @@ import uuid
 import yaml
 
 
+from action.action import BaseAction
 from action.registry import ACTION_HANDLERS
 from interface import aws_s3
 from interface import chat
 from interface import transcribe
 from interface import tts
 from services import intent
-from util import file_tools, logger, yaml_tools
+from util import file_tools, logger
 
 log = logger.setup_logger()
 
@@ -27,18 +28,18 @@ INTENT_LIST = ', '.join(intent["name"] for intent in intents["intents"])
 def handle_command(audio_file_key):
     # Decide what action was requested
     command_text = transcribe.transcribe_audio(audio_file_key, BUCKET_NAME)
-    intent_name = intent.determine_intent(command_text)
-    command_json = intent.resolve_intent_parameters(intent_name, command_text)
-    command_action = json.loads(str(command_json))
+    action_name = intent.determine_intent(command_text)
+    action_json = intent.resolve_intent_parameters(action_name, command_text)
+    action = ACTION_HANDLERS[action_name]['model'].from_json(action_json)
 
     # If the client handles this action, skip processing
     results = None
-    action_run_on_server = yaml_tools.match_yaml_pair(intents, 'name', intent_name) 
-    if action_run_on_server:
-        results = dispatch_action(command_action)
+    if action.run_on_server:
+        # results = dispatch_action(action)
+        results = ACTION_HANDLERS[action_name]['function'](action)
 
     # Push notice that the action was done
-    announce_action_results(command_text, command_action, results)
+    announce_action_results(command_text, action, results)
 
 def dispatch_action(action):
     if action["run_on"] == "server":
@@ -52,11 +53,11 @@ def dispatch_action(action):
 
     return handler(**args)
 
-def announce_action_results(command, action, results=None):
-    if action["run_on"] == "server":
+def announce_action_results(command, action: BaseAction, results=None):
+    if action.run_on_server:
         response = chat.message(intents['handled_message'], f"{command}\n\n{results}")
     else:
-        response = chat.message(intents['client_handling_message'], "command")
+        response = chat.message(intents['client_handling_message'], command)
 
     speech = tts.speak(response)
     file_name = f'tmp/audio/{uuid.uuid4()}.wav'

@@ -8,7 +8,7 @@ log = logger.setup_logger()
 
 API_KEY = os.getenv("OPENAI_API_KEY")
 
-def message(system_message, prompt):
+def message(system_message: str, prompt: str) -> str:
     log.info(f'Sending message to chatGPT: {prompt}')
     openai = OpenAI(api_key=API_KEY)
     response = openai.chat.completions.create(
@@ -21,6 +21,11 @@ def message(system_message, prompt):
     log.info('ChatGippity\'s response:')
     log.info(response)
 
-    return response.choices[0].message.content
+    message_content = response.choices[0].message.content
+    
+    if message_content is None:
+        raise ValueError("Expected a string, but got None.")
+
+    return response.choices[0].message.content or ""
 
 
