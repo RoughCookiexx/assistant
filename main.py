@@ -9,4 +9,4 @@ log = logger.setup_logger()
 
 if __name__ == "__main__":
         log.info("Assistant launching")
-        app.run(debug=True)
+        app.run(host="0.0.0.0", port=5000, debug=True)

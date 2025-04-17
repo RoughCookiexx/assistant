@@ -12,7 +12,8 @@ def transcribe_audio(audio_file_path, bucket_name, region='us-east-1'):
     transcribe = boto3.client('transcribe', region_name=region)
 
     job_name = audio_file_path
-    job_uri = f's3://{bucket_name}/{audio_file_path}'
+    job_uri = f's3://{bucket_name}/public/{audio_file_path}'
+    log.info(f'Transcribing audio for file {job_uri}')
 
     try:
         transcribe.start_transcription_job(
@@ -25,6 +26,7 @@ def transcribe_audio(audio_file_path, bucket_name, region='us-east-1'):
         if e.response['Error']['Code'] == 'ConflictException':
             log.info(f'Job {job_name} already exists.')
             pass
+        else: log.error(e.response)
 
     while True:
         job = transcribe.get_transcription_job(TranscriptionJobName=job_name)

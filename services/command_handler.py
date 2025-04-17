@@ -26,6 +26,8 @@ with open('intents.yaml', 'r') as intent_file:
 INTENT_LIST = ', '.join(intent["name"] for intent in intents["intents"]) 
 
 def handle_command(audio_file_key):
+    log.info(f"Handling command from file {audio_file_key}")
+
     # Decide what action was requested
     command_text = transcribe.transcribe_audio(audio_file_key, BUCKET_NAME)
     action_name = intent.determine_intent(command_text)

@@ -17,7 +17,7 @@ class WeatherAction(BaseAction):
 
 @action_handler("get_weather_forecast")
 def get_weather_report(data: WeatherAction):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={data.city}&appid={api_key}"
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={data.city}&appid={api_key}&units=imperial"
     response = requests.get(url)
 
     log.info('------------------WEATHER APP RESPONSE----------------')
