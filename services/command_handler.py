@@ -1,3 +1,4 @@
+import os
 import action
 import json
 import threading
@@ -64,8 +65,9 @@ def announce_action_results(command, action: BaseAction, device_token, results=N
 
     speech = tts.speak(response)
     file_name = f'{uuid.uuid4()}.wav'
-    file_tools.base64_to_file(speech.audio_base_64, file_name)
-    aws_s3.upload(BUCKET_NAME, file_name, file_name)
+    file_tools.base64_to_file(speech.audio_base_64, f'tmp/{file_name}')
+    aws_s3.upload(BUCKET_NAME, f'tmp/{file_name}', file_name)
+    os.remove(f'tmp/{file_name}')
 
     log.info(f'Sending response to device {device_token}')
     aws_pinpoint.push(device_token, 'Url', file_name)
