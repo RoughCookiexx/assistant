@@ -12,9 +12,10 @@ voice_command_blueprint = Blueprint('voice_command', __name__)
 @voice_command_blueprint.route('/voice_command', methods=['POST'])
 def forward_url():
     url = request.get_json().get('url')
+    device_token = request.get_json().get('device_token')
 
     if url:
-        thread = threading.Thread(target=command_handler.handle_command, args=(url,))
+        thread = threading.Thread(target=command_handler.handle_command, args=(url,device_token))
         thread.start()
         return jsonify({"message": "Job started for URL: " + url})
     else:

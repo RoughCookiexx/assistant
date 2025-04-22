@@ -16,6 +16,6 @@ def download(bucket_name, object_key, destination):
 def upload(bucket_name, source_file, object_key):
     log.info(f"Uploading file {object_key}")
     s3_client = boto3.client('s3')
-    s3_client.upload_file(source_file, bucket_name, object_key)
+    s3_client.upload_file(source_file, bucket_name, f'public/{object_key}')
 
     print(f"file '{source_file}' uploaded to '{bucket_name}/{object_key}'")

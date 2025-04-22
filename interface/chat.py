@@ -15,7 +15,8 @@ def message(system_message: str, prompt: str) -> str:
         model="gpt-3.5-turbo",
         messages=[{"role": "system", "content": system_message},
                   {"role": "user", "content": prompt}],
-        max_tokens=300
+        max_tokens=300,
+        temperature=0.1
     )
 
     log.info('ChatGippity\'s response:')
