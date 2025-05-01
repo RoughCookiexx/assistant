@@ -12,7 +12,7 @@ def message(system_message: str, prompt: str) -> str:
     log.info(f'Sending message to chatGPT: {prompt}')
     openai = OpenAI(api_key=API_KEY)
     response = openai.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4.1-2025-04-14",
         messages=[{"role": "system", "content": system_message},
                   {"role": "user", "content": prompt}],
         max_tokens=300,

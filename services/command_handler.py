@@ -35,27 +35,15 @@ def handle_command(audio_file_key, device_token):
     action_name = intent.determine_intent(command_text)
     action_json = intent.resolve_intent_parameters(action_name, command_text)
     action = ACTION_HANDLERS[action_name]['model'].from_json(action_json)
+    log.info(f'Chat Jippity decided we should run this action:\n{action}')
 
     # If the client handles this action, skip processing
     results = None
     if action.run_on_server:
-        # results = dispatch_action(action)
         results = ACTION_HANDLERS[action_name]['function'](action)
 
     # Push notice that the action was done
     announce_action_results(command=command_text, action=action, device_token=device_token, results=results)
-
-def dispatch_action(action):
-    if action["run_on"] == "server":
-        handler = ACTION_HANDLERS.get(action["function"])
-        if not handler:
-            raise ValueError(f"No handler found for action '{action["function"]}'")
-    else:
-        raise ValueError(f"Action '{action["name"]}' must be handled by client")
-    
-    args = {item['param']: item['value'] for item in action['params']}
-
-    return handler(**args)
 
 def announce_action_results(command, action: BaseAction, device_token, results=None):
     if action.run_on_server:
