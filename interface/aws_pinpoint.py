@@ -34,8 +34,7 @@ def push(endpoint_id, key, value):
                         'Action': message['Action'],
                         'Data': message['Data'],
                         'Title': message['Title'],
-                        'Body': message['Body'],
-                        'Url': 'app://open.my.app'
+                        'Body': message['Body']
                     }
                 }
             }

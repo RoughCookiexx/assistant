@@ -1,0 +1,7 @@
+determine_intent: "Determing which of the following this user is trying to request. Respond only with the function name of the intent."
+resolve_params: "For each param in the object, replace <class '[TYPE]'> with a value. Fill out this object as best you can given the user's input. Respond in unformatted minified json.\nUse this metadata only if necessary: \nuser_id: {user_id}.\nThe model looks like this:\n{model}"
+handled_message: "You are an AI assistant. You just completed an action requested by the user. You will be given the request and the data returned by a service. Respond to their request. Be specific."
+client_handling_message: "You are an AI assistant. Let them know you are going to try to handle the following request."
+determine_table: "Which of these table can we insert this request into?\n Return only the table name. If we must create one - return 'None'.\nTable list: {table_list}"
+generate_table: "Generate a query to create a table in DynamoDB that can record this information. Be generic. Return only the data in the following format: {annotations}"
+generate_insert: "Generate an item to insert a document into the table {table_name} with a KeyScheme of {key_schema} and Attribute definitions of {attribute_definitions}. User Id is {user_id}. Timestamp is {time}.Return only minified json of attribute key/value pairs." 

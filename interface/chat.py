@@ -9,18 +9,16 @@ log = logger.setup_logger()
 API_KEY = os.getenv("OPENAI_API_KEY")
 
 def message(system_message: str, prompt: str) -> str:
-    log.info(f'Sending message to chatGPT: {prompt}')
+    log.info(f'Sending message to chatGPT: \nSystem Prompt: {system_message}\nUser prompt: {prompt}')
     openai = OpenAI(api_key=API_KEY)
     response = openai.chat.completions.create(
-        model="gpt-4.1-2025-04-14",
+        model="o4-mini-2025-04-16",
         messages=[{"role": "system", "content": system_message},
-                  {"role": "user", "content": prompt}],
-        max_tokens=300,
-        temperature=0.1
+                  {"role": "user", "content": prompt}]
     )
 
-    log.info('ChatGippity\'s response:')
-    log.info(response)
+    log.info('ChatGippity\'s response:\n')
+    log.info(response.choices[0].message.content)
 
     message_content = response.choices[0].message.content
     

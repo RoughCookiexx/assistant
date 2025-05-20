@@ -19,3 +19,29 @@ def list_tables():
 
     return tables
 
+def describe_table(table_name):
+    dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+    response = dynamodb.describe_table(TableName=table_name)
+    table = response['Table']
+    return table['KeySchema'], table['AttributeDefinitions']
+
+def insert_item(table_name, item):
+    dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+    response = dynamodb.put_item(
+        TableName=table_name,
+        Item=item
+    )
+
+def create_table(table_name, key_schema, attribute_definitions):
+    dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+    dynamodb.create_table(
+        TableName=table_name.lower(),
+        KeySchema=key_schema,
+        AttributeDefinitions=attribute_definitions,
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 1,
+            'WriteCapacityUnits': 1
+        }
+    )
+
+
